@@ -1,0 +1,35 @@
+version: "3"
+
+volumes:
+  db-data:
+    driver: local
+
+services:
+  app:
+    hostname: app
+    image: musicmanager_web
+    stdin_open: true
+    tty: true 
+    build: .
+    command: ash -c "export $$(egrep -v '^#' .env | xargs) && DATABASE_URI=$$(eval 'echo $DATABASE_URI') && ash"
+    ports:
+      - "5000:5000"
+    volumes: 
+      - .:/usr/app
+    depends_on:
+      - pgsql-db
+    environment:
+      FLASK_ENV: "development"
+
+  
+  pgsql-db:
+    hostname: pgsql-db
+    image: postgres:11
+    environment:
+      POSTGRES_PASSWORD: "musicmanager_159"
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./infra/database/scripts:/docker-entrypoint-initdb.d
+      - db-data:/var/lib/postgresql/data
+    
