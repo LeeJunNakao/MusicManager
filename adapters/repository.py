@@ -33,12 +33,18 @@ class Repository(AbstractRepository):
 
     @classmethod
     def create(cls, **data):
-        cls.session.add(cls.model(**data))
+        instance = cls.model(**data)
+        cls.session.add(instance)
         cls.session.commit()
+        return instance
 
     @classmethod
     def get(cls, **data):
         return cls.session.query(cls.model).filter_by(**data).all()
+
+    @classmethod
+    def get_one(cls, **data):
+        return cls.session.query(cls.model).filter_by(**data).one()
 
     @classmethod
     def list(cls):
@@ -51,7 +57,3 @@ class MusicRepository(Repository):
 
 class UserRepository(Repository):
     model = User
-    
-    @classmethod
-    def get_one(cls, **data):
-        return cls.session.query(cls.model).filter_by(**data).one()

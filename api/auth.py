@@ -14,8 +14,9 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 def register_route():
     try:
         user = auth_services.create_user(**dict(request.json))
-        return user, 200
-    except:
+        return json.dumps(user), 200
+    except Exception as e:
+        print(e)
         return "Não foi possível criar usuario", 400
 
 
@@ -24,8 +25,7 @@ def login_route():
     try:
         response = auth_services.login(**dict(request.json))
         return json.dumps(response), 200
-    except Exception as e:
-        print(e)
+    except:
         return "Acesso negado!", 400
 
 

@@ -1,5 +1,7 @@
+from typing import List
 from dataclasses import dataclass
 from pydantic import BaseModel, constr
+from domain.music import Music
 
 
 @dataclass
@@ -8,6 +10,7 @@ class User:
     name: str
     email: str
     password: str
+    musics: List[Music]
 
 
 class CreateUserDto(BaseModel):
@@ -18,6 +21,7 @@ class CreateUserDto(BaseModel):
         min_length=6,
         regex=r"^(?=.*[0-9])(?=.*[a-z])(?=.*[@$#&_])(?=.*[A-Z])([\w@$#&_]+)$",
     )
+    
 
 
 class LoginUserDto(BaseModel):

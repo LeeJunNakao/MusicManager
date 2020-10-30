@@ -12,7 +12,7 @@ def login_required(f):
             decoded_token = validate_token(token)
             request.user_info = decoded_token
             return f(*args, **kwargs)
-        except Exception as e:
+        except:
             return "Favor fazer o login", 400
 
     return verify_token
