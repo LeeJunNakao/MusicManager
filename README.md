@@ -2,4 +2,5 @@
 
 ## INICIALIZATION
 
-* Create database with: `python3 /infra/database/scripts/scripts.py`
+Run docker with: `docker-compose run --service-ports app`
+Inside docker run: flask run
