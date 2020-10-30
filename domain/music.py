@@ -1,8 +1,9 @@
 from dataclasses import dataclass
-from pydantic import BaseModel
+from pydantic import BaseModel, constr
 from typing import Optional
 
 
+@dataclass
 class Music:
     name: str
     artist: str
@@ -10,7 +11,8 @@ class Music:
     info: str
 
 
-class MusicDto(BaseModel):
-    id: Optional[int]
-    name: Optional[str]
-    artist: Optional[str]
+class InsertMusicDto(BaseModel):
+    user_id: int
+    name: constr(min_length=1)
+    artist: constr(min_length=1)
+    info: Optional[str]

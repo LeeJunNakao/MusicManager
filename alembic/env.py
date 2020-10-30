@@ -8,7 +8,7 @@ from alembic import context
 import sys
 
 sys.path.append('/usr/app')
-from adapters.orm.music import music_metadata
+from adapters.orm import metadatas
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -22,7 +22,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = [music_metadata]
+target_metadata = metadatas
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

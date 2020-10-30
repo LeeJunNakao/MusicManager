@@ -1,25 +1,57 @@
 import abc
-from domain.music import Music, MusicDto
+from dataclasses import dataclass
+from adapters.orm.music import Music
+from adapters.orm.user import User
+import config
 
 
-class AbstractMusicRepository(abc.ABC):
-    @abc.abstractclassmethod
-    def create(self, music: Music):
+class AbstractRepository(abc.ABC):
+    @classmethod
+    @abc.abstractmethod
+    def model():
         pass
 
-    def get(self, musicDto: MusicDto):
+    @property
+    @classmethod
+    @abc.abstractmethod
+    def session():
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def create(self, dto):
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def get(self, dto):
         pass
 
 
-class MusicRepository(AbstractMusicRepository):
-    def __init__(self, session):
-        self.session = session
+class Repository(AbstractRepository):
+    session = config.get_session()
 
-    def create(self, music: Music):
-        self.session.add(music)
+    @classmethod
+    def create(cls, **data):
+        cls.session.add(cls.model(**data))
+        cls.session.commit()
 
-    def get(self, musicDto: MusicDto):
-        return self.session.query(Music).filter_by(**dict(musicDto)).all()
+    @classmethod
+    def get(cls, **data):
+        return cls.session.query(cls.model).filter_by(**data).all()
 
-    def list(self):
-        return self.session.query(Music).all()
+    @classmethod
+    def list(cls):
+        return cls.session.query(cls.model).all()
+
+
+class MusicRepository(Repository):
+    model = Music
+
+
+class UserRepository(Repository):
+    model = User
+    
+    @classmethod
+    def get_one(cls, **data):
+        return cls.session.query(cls.model).filter_by(**data).one()

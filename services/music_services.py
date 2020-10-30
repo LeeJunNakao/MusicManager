@@ -1,10 +1,11 @@
-from domain.music import Music
-from adapters.repository import AbstractMusicRepository
+from domain.music import InsertMusicDto
+from adapters.repository import MusicRepository
 
 
-def insert_music(music: Music, repo: AbstractMusicRepository, session):
-    repo.create(music)
 
-    session.commit()
+def insert_music(**music: dict):
+    
+    dto = InsertMusicDto(**music)
+    MusicRepository.create(**dto.dict())
 
-    return music
+    return dto.dict()
