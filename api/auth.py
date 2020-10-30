@@ -15,8 +15,7 @@ def register_route():
     try:
         user = auth_services.create_user(**dict(request.json))
         return json.dumps(user), 200
-    except Exception as e:
-        print(e)
+    except:
         return "Não foi possível criar usuario", 400
 
 
@@ -28,13 +27,3 @@ def login_route():
     except:
         return "Acesso negado!", 400
 
-
-@bp.route("/users", methods=["GET"])
-def users():
-    users = auth_services.list_users()
-
-    users_list = [dict(user.__dict__) for user in users]
-    [user.pop("password") for user in users_list]
-    [user.pop("_sa_instance_state") for user in users_list]
-
-    return json.dumps(users_list), 200

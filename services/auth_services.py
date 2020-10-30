@@ -17,7 +17,6 @@ def create_user(**data):
 
 
 def login(**data):
-    print(data)
     dto = LoginUserDto(**data)
     user = UserRepository.get_one(email=dto.email)
     hashed_password = hash_handler(dto.password)
@@ -32,8 +31,3 @@ def login(**data):
 
 def validate_token(token):
     return decode_token(token)
-
-
-# def list_users():
-#     users = UserRepository.list()
-#     return users
