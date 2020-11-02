@@ -7,7 +7,7 @@ import jwt
 
 def create_user(**data):
 
-    unhashed_password = data['password']
+    unhashed_password = data["password"]
     dto = CreateUserDto(**data)
     dto.password = hash_handler(dto.password)
     UserRepository.create(**dto.dict())

@@ -21,7 +21,6 @@ class CreateUserDto(BaseModel):
         min_length=6,
         regex=r"^(?=.*[0-9])(?=.*[a-z])(?=.*[@$#&_])(?=.*[A-Z])([\w@$#&_]+)$",
     )
-    
 
 
 class LoginUserDto(BaseModel):

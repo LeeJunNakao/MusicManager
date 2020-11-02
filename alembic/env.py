@@ -1,3 +1,4 @@
+from adapters.orm import metadatas
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -7,8 +8,7 @@ from alembic import context
 
 import sys
 
-sys.path.append('/usr/app')
-from adapters.orm import metadatas
+sys.path.append("/usr/app")
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -68,9 +68,8 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+        context.configure(connection=connection,
+                          target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

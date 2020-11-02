@@ -26,4 +26,3 @@ def login_route():
         return json.dumps(response), 200
     except:
         return "Acesso negado!", 400
-
