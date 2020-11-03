@@ -1,5 +1,4 @@
 import abc
-from dataclasses import dataclass
 from adapters.orm.music import Music
 from adapters.orm.user import User
 import config
@@ -57,3 +56,10 @@ class MusicRepository(Repository):
 
 class UserRepository(Repository):
     model = User
+
+    @classmethod
+    def update_by_id(cls, **data):
+        instance = cls.get_one(id=data["id"])
+        for key in data.keys():
+            setattr(instance, key, data[key])
+        cls.session.commit()

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from dataclasses import dataclass
 from pydantic import BaseModel, constr
 from domain.music import Music
@@ -25,4 +25,11 @@ class CreateUserDto(BaseModel):
 
 class LoginUserDto(BaseModel):
     email: str
+    password: str
+
+
+class UpdateUserDto(BaseModel):
+    id: Optional[int]
+    name: Optional[constr(max_length=50)]
+    email: Optional[constr(max_length=100, regex=r"[\w.]+@\w+\.[a-zA-Z0-9]+$")]
     password: str

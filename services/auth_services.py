@@ -2,7 +2,6 @@ from domain.user import CreateUserDto, LoginUserDto
 from adapters.repository import UserRepository
 from services.utils.hash import hash_handler
 from services.utils.jwt_token_handler import generate_token, decode_token
-import jwt
 
 
 def create_user(**data):

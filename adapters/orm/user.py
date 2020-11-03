@@ -1,13 +1,10 @@
-from .metadata import Base
-from sqlalchemy import Table, MetaData, Column, Integer, String, Date
-from sqlalchemy.orm import mapper, relationship
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import relationship
 
-from domain.user import User as UserDomain
-
-user_metadata = Base.metadata
+from adapters.database_config import database
 
 
-class User(Base, UserDomain):
+class User(database.Model):
     __tablename__ = "users"
     id = Column(Integer, primary_key=True, autoincrement=True)
     name = Column(String(50), nullable=False)

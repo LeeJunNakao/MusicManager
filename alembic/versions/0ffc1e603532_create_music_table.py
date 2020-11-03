@@ -1,7 +1,7 @@
 """create music table
 
 Revision ID: 0ffc1e603532
-Revises: 
+Revises:
 Create Date: 2020-10-21 02:16:42.022610
 
 """

@@ -1,11 +1,9 @@
-import sys
 from flask import (
     Blueprint,
     request,
 )
 import json
 from services import auth_services
-from api.utils.decorators import login_required
 
 bp = Blueprint("auth", __name__, url_prefix="/auth")
 

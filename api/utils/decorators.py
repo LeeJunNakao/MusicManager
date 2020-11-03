@@ -1,7 +1,6 @@
 from functools import wraps
 from flask import request
 from services.auth_services import validate_token
-import json
 
 
 def login_required(f):

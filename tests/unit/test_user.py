@@ -27,10 +27,8 @@ class TestLoginDto:
 
     def test_create_user_with_invalid_email(self, valid_data, invalid_data):
         with pytest.raises(ValidationError):
-            assert CreateUserDto(
-                **{**valid_data, "email": invalid_data["email"]})
+            assert CreateUserDto(**{**valid_data, "email": invalid_data["email"]})
 
     def test_create_user_with_invalid_password(self, valid_data, invalid_data):
         with pytest.raises(ValidationError):
-            assert CreateUserDto(
-                **{**valid_data, "password": invalid_data["password"]})
+            assert CreateUserDto(**{**valid_data, "password": invalid_data["password"]})

@@ -5,23 +5,29 @@ volumes:
     driver: local
 
 services:
-  app:
+  app: &app
     hostname: app
     image: musicmanager_web
     stdin_open: true
     tty: true 
     build: .
-    command: ash -c "export $$(egrep -v '^#' .env | xargs) && DATABASE_URI=$$(eval 'echo $DATABASE_URI') && ash"
+    command: ash -c "export $$(egrep -v '^#' .env | xargs) && ash"
     ports:
       - "5000:5000"
     volumes: 
       - .:/usr/app
     depends_on:
       - pgsql-db
-    environment:
+    environment: &env
+      DATABASE_NAME: "music_manager"
       FLASK_ENV: "development"
+      PYTHONPATH: "/usr/app"
 
-  
+  tests:
+    <<: *app
+    environment: 
+      DATABASE_NAME: "tests_db"
+
   pgsql-db:
     hostname: pgsql-db
     image: postgres:11

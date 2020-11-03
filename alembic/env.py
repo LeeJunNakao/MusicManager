@@ -1,4 +1,3 @@
-from adapters.orm import metadatas
 from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
@@ -6,13 +5,20 @@ from sqlalchemy import pool
 
 from alembic import context
 
-import sys
+from config import get_settings
+from adapters.database_config import init_database
 
-sys.path.append("/usr/app")
+# import sys
+
+# sys.path.append("/usr/app")
+
+_SETTINGS = get_settings()
+database = init_database()
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option("sqlalchemy.url", str(_SETTINGS.DATABASE_URI))
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -22,7 +28,7 @@ fileConfig(config.config_file_name)
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = metadatas
+target_metadata = database.metadata
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
@@ -68,8 +74,7 @@ def run_migrations_online():
     )
 
     with connectable.connect() as connection:
-        context.configure(connection=connection,
-                          target_metadata=target_metadata)
+        context.configure(connection=connection, target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()

@@ -2,9 +2,13 @@ import os
 import jwt
 import time
 
+from config import get_settings
+
+settings = get_settings()
+
 
 def generate_token(data):
-    secret = os.getenv("JWT_SECRET")
+    secret = settings["JWT_SECRET"]
     algorithm = "HS256"
     one_day_in_seconds = 86400
     now = time.time()
@@ -13,7 +17,7 @@ def generate_token(data):
 
 
 def decode_token(token):
-    secret = os.getenv("JWT_SECRET")
+    secret = settings["JWT_SECRET"]
     algorithms = ["HS256"]
 
     return jwt.decode(token, secret, algorithms=algorithms)

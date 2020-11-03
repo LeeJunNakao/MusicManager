@@ -1,8 +1,8 @@
 from flask import Blueprint, request
 from services import music_services
 from api.utils.decorators import login_required
-from adapters.repository import UserRepository
 import json
+
 
 bp = Blueprint("music", __name__, url_prefix="/music")
 

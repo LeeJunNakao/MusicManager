@@ -73,13 +73,11 @@ class TestMusicDto:
 
     def test_get_music_with_invalid_id(self, get_valid_data, get_invalid_data):
         with pytest.raises(ValidationError):
-            assert GetMusicDto(
-                **{**get_valid_data, "id": get_invalid_data["id"]})
+            assert GetMusicDto(**{**get_valid_data, "id": get_invalid_data["id"]})
 
     def test_get_music_with_invalid_name(self, get_valid_data, get_invalid_data):
         with pytest.raises(ValidationError):
-            assert GetMusicDto(
-                **{**get_valid_data, "name": get_invalid_data["name"]})
+            assert GetMusicDto(**{**get_valid_data, "name": get_invalid_data["name"]})
 
     def test_get_music_with_invalid_artist(self, get_valid_data, get_invalid_data):
         with pytest.raises(ValidationError):
