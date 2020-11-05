@@ -97,3 +97,23 @@ class TestAuthentication:
         response = auth_services.login(session, **create_valid_data)
 
         assert "token" in response.keys()
+
+    def test_login_with_invalid_password(self, create_valid_data):
+        session = get_session()
+
+        self.test_register_with_valid_data(create_valid_data)
+
+        with pytest.raises(Exception):
+            auth_services.login(
+                session, **{**create_valid_data, "password": "A1bc5d5s@"}
+            )
+
+    def test_login_with_invalid_email(self, create_valid_data, create_invalid_data):
+        session = get_session()
+
+        self.test_register_with_valid_data(create_valid_data)
+
+        with pytest.raises(Exception):
+            auth_services.login(
+                session, **{**create_valid_data, "email": create_invalid_data["email"]}
+            )
