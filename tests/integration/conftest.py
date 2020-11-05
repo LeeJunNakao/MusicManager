@@ -1,30 +1,41 @@
 import pytest
-import os
+from contextlib import contextmanager
+
 
 from api import create_app
-from adapters.database_config import init_database
-from config import get_settings
+from adapters.database_config import init_database, database
 
 
 @pytest.fixture(autouse=True)
 def app():
-    settings = get_settings()
     app = create_app()
-    app.config["TESTING"] = "True"
-    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-    app.config["SQLALCHEMY_DATABASE_URI"] = settings.DATABASE_URI
-    
+
     return app
 
 
-@pytest.fixture(autouse=True)
-def truncate_tables(app):
-    database = init_database()
-    database.init_app(app)
-    with app.app_context():
-        with database.get_engine().connect() as conn:
-            with conn.begin():
-                tables_names = ",".join(
-                    f"{table.name}" for table in database.metadata.sorted_tables
+def truncate_database() -> None:
+    with database.get_engine().connect() as conn:
+        with conn.begin():
+            conn.execute(
+                """TRUNCATE {} RESTART IDENTITY""".format(
+                    ",".join(
+                        f'"{table.name}"'
+                        for table in reversed(database.metadata.sorted_tables)
+                    )
                 )
-                conn.execute("TRUNCATE {} RESTART IDENTITY".format(tables_names))
+            )
+
+
+@contextmanager
+def clear_database():
+    db = init_database()
+    truncate_database()
+    yield db
+
+
+@pytest.fixture(autouse=True)
+def exec_database(app):
+    with app.app_context():
+        with clear_database() as db:
+            yield db
+

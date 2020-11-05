@@ -14,7 +14,7 @@ class User:
 
 
 class CreateUserDto(BaseModel):
-    name: constr(max_length=50)
+    name: constr(min_length=1, max_length=50)
     email: constr(max_length=100, regex=r"[\w.]+@\w+\.[a-zA-Z0-9]+$")
     password: constr(
         max_length=12,

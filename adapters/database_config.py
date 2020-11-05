@@ -1,6 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-from config import engine
+from config import get_settings
 
 metadata = MetaData(
     naming_convention={
@@ -17,6 +17,8 @@ database = SQLAlchemy(metadata=metadata)
 def init_database() -> SQLAlchemy:
     import adapters.orm
 
-    metadata.create_all(engine)   
+    # settings = get_settings()
+    # if settings.FLASK_ENV == "testing":
+    #     metadata.create_all(engine)
 
     return database

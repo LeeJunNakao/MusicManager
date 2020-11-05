@@ -27,6 +27,7 @@ services:
     <<: *app
     environment: 
       DATABASE_NAME: "tests_db"
+      FLASK_ENV: "testing"
 
   pgsql-db:
     hostname: pgsql-db

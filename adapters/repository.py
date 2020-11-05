@@ -1,7 +1,6 @@
 import abc
 from adapters.orm.music import Music
 from adapters.orm.user import User
-import config
 
 
 class AbstractRepository(abc.ABC):
@@ -28,26 +27,23 @@ class AbstractRepository(abc.ABC):
 
 
 class Repository(AbstractRepository):
-    session = config.get_session()
-
     @classmethod
-    def create(cls, **data):
+    def create(cls, session, **data):
         instance = cls.model(**data)
-        cls.session.add(instance)
-        cls.session.commit()
+        session.add(instance)
         return instance
 
     @classmethod
-    def get(cls, **data):
-        return cls.session.query(cls.model).filter_by(**data).all()
+    def get(cls, session, **data):
+        return session.query(cls.model).filter_by(**data).all()
 
     @classmethod
-    def get_one(cls, **data):
-        return cls.session.query(cls.model).filter_by(**data).one()
+    def get_one(cls, session, **data):
+        return session.query(cls.model).filter_by(**data).one()
 
     @classmethod
-    def list(cls):
-        return cls.session.query(cls.model).all()
+    def list(cls, session):
+        return session.query(cls.model).all()
 
 
 class MusicRepository(Repository):
@@ -58,8 +54,7 @@ class UserRepository(Repository):
     model = User
 
     @classmethod
-    def update_by_id(cls, **data):
-        instance = cls.get_one(id=data["id"])
+    def update_by_id(cls, session, **data):
+        instance = cls.get_one(session, id=data["id"])
         for key in data.keys():
             setattr(instance, key, data[key])
-        cls.session.commit()

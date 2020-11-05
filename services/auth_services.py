@@ -4,20 +4,28 @@ from services.utils.hash import hash_handler
 from services.utils.jwt_token_handler import generate_token, decode_token
 
 
-def create_user(**data):
-
+def create_user(session, **data):
     unhashed_password = data["password"]
     dto = CreateUserDto(**data)
     dto.password = hash_handler(dto.password)
-    UserRepository.create(**dto.dict())
-    encoded_jwt = login(email=dto.email, password=unhashed_password)
+
+    try:
+        UserRepository.create(session, **dto.dict())
+        session.commit()
+    except Exception:
+        session.rollback()
+        raise Exception
+    finally:
+        session.close()
+
+    encoded_jwt = login(session, email=dto.email, password=unhashed_password)
 
     return encoded_jwt
 
 
-def login(**data):
+def login(session, **data):
     dto = LoginUserDto(**data)
-    user = UserRepository.get_one(email=dto.email)
+    user = UserRepository.get_one(session, email=dto.email)
     hashed_password = hash_handler(dto.password)
 
     if user.password != hashed_password:
