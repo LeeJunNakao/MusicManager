@@ -2,17 +2,24 @@ from domain.music import InsertMusicDto, GetMusicDto
 from adapters.repository import MusicRepository, UserRepository
 
 
-def insert_music(**music: dict):
+def insert_music(session, music: dict):
 
     dto = InsertMusicDto(**music)
-    MusicRepository.create(**dto.dict())
 
-    return dto.dict()
+    try:
+        MusicRepository.create(session, **dto.dict())
+        session.commit()
+        return dto.dict()
+    except Exception:
+        session.rollback()
+        raise Exception
+    finally:
+        session.close()
 
 
-def list_user_musics(user_id: int):
+def list_user_musics(session, user_id: int):
 
-    user = UserRepository.get_one(id=user_id)
+    user = UserRepository.get_one(session, id=user_id)
     user_musics = user.musics
     musics = [GetMusicDto(**vars(music)).dict() for music in user_musics]
 

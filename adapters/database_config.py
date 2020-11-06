@@ -17,8 +17,9 @@ database = SQLAlchemy(metadata=metadata)
 def init_database() -> SQLAlchemy:
     import adapters.orm
 
-    # settings = get_settings()
-    # if settings.FLASK_ENV == "testing":
-    #     metadata.create_all(engine)
-
     return database
+
+
+def get_session():
+    db = init_database()
+    return db.session

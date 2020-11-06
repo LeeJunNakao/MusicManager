@@ -3,7 +3,7 @@ from pydantic import ValidationError
 from adapters.repository import UserRepository
 from adapters.orm.user import User
 from services import auth_services
-from adapters.database_config import init_database
+from adapters.database_config import get_session
 
 
 @pytest.fixture(name="create_valid_data")
@@ -27,11 +27,6 @@ def create_invalid_data_fixture():
 @pytest.fixture(name="update_valid_data")
 def update_valid_data_fixture():
     return {"id": 1, "name": "João da Silva"}
-
-
-def get_session():
-    db = init_database()
-    return db.session
 
 
 class TestAuthentication:

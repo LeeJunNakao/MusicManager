@@ -29,7 +29,19 @@ class LoginUserDto(BaseModel):
 
 
 class UpdateUserDto(BaseModel):
-    id: Optional[int]
+    id: int
     name: Optional[constr(max_length=50)]
     email: Optional[constr(max_length=100, regex=r"[\w.]+@\w+\.[a-zA-Z0-9]+$")]
-    password: str
+    password: Optional[
+        constr(
+            max_length=12,
+            min_length=6,
+            regex=r"^(?=.*[0-9])(?=.*[a-z])(?=.*[@$#&_])(?=.*[A-Z])([\w@$#&_]+)$",
+        )
+    ]
+
+
+class GetUserDto(BaseModel):
+    id: int
+    name: str
+    email: str

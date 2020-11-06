@@ -3,8 +3,8 @@ from contextlib import contextmanager
 
 
 from api import create_app
-from adapters.database_config import init_database, database
-
+from adapters.database_config import init_database, database, get_session
+from services import auth_services
 
 @pytest.fixture(autouse=True)
 def app():
@@ -39,3 +39,16 @@ def exec_database(app):
         with clear_database() as db:
             yield db
 
+
+@pytest.fixture(name="user_info")
+def get_valid_user_fixture():
+    user_data = {
+        "name": "João",
+        "email": "joao@email.com",
+        "password": "Abc123@",
+    }
+    session = get_session()
+    jwt = auth_services.create_user(session, **user_data)
+    user_info = auth_services.validate_token(jwt["token"])
+
+    return user_info
