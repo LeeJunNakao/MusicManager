@@ -92,7 +92,7 @@ class TestLogin:
 
         assert response.data.decode("utf-8") == "Acesso negado!"
         assert response.status_code == 400
-    
+
     def test_login_with_wrong_password(self, app, valid_data, invalid_data):
         with app.test_client() as client:
             client.post("/auth/register", json=valid_data)

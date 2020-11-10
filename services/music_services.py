@@ -7,9 +7,11 @@ def insert_music(session, music: dict):
     dto = InsertMusicDto(**music)
 
     try:
-        MusicRepository.create(session, **dto.dict())
+        music = MusicRepository.create(session, **dto.dict())
         session.commit()
-        return dto.dict()
+        return GetMusicDto(
+            id=music.id, name=music.name, artist=music.artist, info=music.info
+        ).dict()
     except Exception:
         session.rollback()
         raise Exception

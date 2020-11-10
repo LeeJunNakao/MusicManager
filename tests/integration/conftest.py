@@ -6,6 +6,7 @@ from api import create_app
 from adapters.database_config import init_database, database, get_session
 from services import auth_services
 
+
 @pytest.fixture(autouse=True)
 def app():
     app = create_app()
@@ -50,5 +51,6 @@ def get_valid_user_fixture():
     session = get_session()
     jwt = auth_services.create_user(session, **user_data)
     user_info = auth_services.validate_token(jwt["token"])
+    user_info["token"] = jwt["token"]
 
     return user_info
