@@ -17,6 +17,7 @@ database = SQLAlchemy(metadata=metadata)
 def init_database() -> SQLAlchemy:
     import adapters.orm
 
+    database.create_all()
     return database
 
 

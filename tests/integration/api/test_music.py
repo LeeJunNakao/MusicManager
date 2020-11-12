@@ -81,3 +81,13 @@ class TestMusic:
             assert music[0]["name"] == music[1]["name"]
             assert music[0]["artist"] == music[1]["artist"]
             assert music[0]["info"] == music[1]["info"]
+
+    def test_get_music_without_token(self, app, headers, music_list):
+        with app.test_client() as client:
+            response_list = [
+                client.post(self.endpoint, json=music)
+                for music in music_list
+            ]
+
+        for response in response_list:
+            assert response.status_code == 400
