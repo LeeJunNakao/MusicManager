@@ -13,7 +13,7 @@ bp = Blueprint("auth", __name__, url_prefix="/auth")
 def register_route():
     session = get_session()
     try:
-        user = auth_services.create_user(session, **dict(request.json))
+        user = auth_services.create_user(session, dict(request.json))
         return user, 201
     except:
         return "Não foi possível criar usuario", 400
@@ -23,7 +23,7 @@ def register_route():
 def login_route():
     session = get_session()
     try:
-        response = auth_services.login(session, **dict(request.json))
+        response = auth_services.login(session, dict(request.json))
         return response, 200
     except:
         return "Acesso negado!", 400

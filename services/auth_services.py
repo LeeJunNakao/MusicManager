@@ -4,13 +4,13 @@ from services.utils.hash import hash_handler
 from services.utils.jwt_token_handler import generate_token, decode_token
 
 
-def create_user(session, **data):
+def create_user(session, data):
     unhashed_password = data["password"]
     dto = CreateUserDto(**data)
     dto.password = hash_handler(dto.password)
 
     try:
-        UserRepository.create(session, **dto.dict())
+        UserRepository.create(session, dto.dict())
         session.commit()
     except Exception:
         session.rollback()
@@ -18,14 +18,14 @@ def create_user(session, **data):
     finally:
         session.close()
 
-    encoded_jwt = login(session, email=dto.email, password=unhashed_password)
+    encoded_jwt = login(session, dict(email=dto.email, password=unhashed_password))
 
     return encoded_jwt
 
 
-def login(session, **data):
+def login(session, data):
     dto = LoginUserDto(**data)
-    user = UserRepository.get_one(session, email=dto.email)
+    user = UserRepository.get_one(session, dict(email=dto.email))
     hashed_password = hash_handler(dto.password)
 
     if user.password != hashed_password:

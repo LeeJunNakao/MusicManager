@@ -12,6 +12,6 @@ def get_valid_user_fixture():
         "password": "Abc123@",
     }
     session = get_session()
-    jwt = auth_services.create_user(session, **user_data)
+    jwt = auth_services.create_user(session, user_data)
 
     return jwt

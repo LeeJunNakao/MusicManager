@@ -33,8 +33,8 @@ class TestAuthentication:
     def test_create_user_with_valid_data(self, create_valid_data):
         session = get_session()
 
-        auth_services.create_user(session, **create_valid_data)
-        user = UserRepository.get_one(session, name=create_valid_data["name"])
+        auth_services.create_user(session, create_valid_data)
+        user = UserRepository.get_one(session, dict(name=create_valid_data["name"]))
 
         assert user.name == create_valid_data["name"]
 
@@ -45,7 +45,7 @@ class TestAuthentication:
 
         with pytest.raises(ValidationError):
             auth_services.create_user(
-                session, **{**create_valid_data, "email": create_invalid_data["email"]}
+                session, {**create_valid_data, "email": create_invalid_data["email"]}
             )
 
     def test_create_user_with_invalid_password(
@@ -56,7 +56,7 @@ class TestAuthentication:
         with pytest.raises(ValidationError):
             auth_services.create_user(
                 session,
-                **{**create_valid_data, "password": create_invalid_data["password"]}
+                {**create_valid_data, "password": create_invalid_data["password"]},
             )
 
     def test_create_user_with_invalid_name(
@@ -66,7 +66,7 @@ class TestAuthentication:
 
         with pytest.raises(ValidationError):
             auth_services.create_user(
-                session, **{**create_valid_data, "name": create_invalid_data["name"]}
+                session, {**create_valid_data, "name": create_invalid_data["name"]}
             )
 
     def test_create_user_with_existing_email(self, create_valid_data):
@@ -80,7 +80,7 @@ class TestAuthentication:
     def test_register_with_valid_data(self, create_valid_data):
         session = get_session()
 
-        encoded_jwt = auth_services.create_user(session, **create_valid_data)
+        encoded_jwt = auth_services.create_user(session, create_valid_data)
         decoded_token = auth_services.validate_token(encoded_jwt["token"])
 
         assert decoded_token["id"] == 1
@@ -89,7 +89,7 @@ class TestAuthentication:
         session = get_session()
 
         self.test_register_with_valid_data(create_valid_data)
-        response = auth_services.login(session, **create_valid_data)
+        response = auth_services.login(session, create_valid_data)
 
         assert "token" in response.keys()
 
@@ -99,9 +99,7 @@ class TestAuthentication:
         self.test_register_with_valid_data(create_valid_data)
 
         with pytest.raises(Exception):
-            auth_services.login(
-                session, **{**create_valid_data, "password": "A1bc5d5s@"}
-            )
+            auth_services.login(session, {**create_valid_data, "password": "A1bc5d5s@"})
 
     def test_login_with_invalid_email(self, create_valid_data, create_invalid_data):
         session = get_session()
@@ -110,5 +108,5 @@ class TestAuthentication:
 
         with pytest.raises(Exception):
             auth_services.login(
-                session, **{**create_valid_data, "email": create_invalid_data["email"]}
+                session, {**create_valid_data, "email": create_invalid_data["email"]}
             )

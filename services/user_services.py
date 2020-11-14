@@ -13,7 +13,7 @@ def update_user_data(session, data):
             password = data["password"]
             dto.password = hash_handler(password)
     try:
-        UserRepository.update_by_id(session, **dto.dict())
+        UserRepository.update_by_id(session, dto.dict())
         session.commit()
     except Exception:
         session.rollback()
@@ -30,6 +30,6 @@ def list_users():
 
 
 def find_user(session, data):
-    result = UserRepository.get_one(session, **data)
+    result = UserRepository.get_one(session, dict(**data))
     user = GetUserDto(**vars(result))
     return user.dict()

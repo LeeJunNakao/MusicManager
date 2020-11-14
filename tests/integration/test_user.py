@@ -24,7 +24,7 @@ def update_valid_data_fixture():
 class TestUserServices:
     def test_update_valid_data(self, create_valid_data, update_valid_data):
         session = get_session()
-        encoded_jwt = auth_services.create_user(session, **create_valid_data)
+        encoded_jwt = auth_services.create_user(session, create_valid_data)
         user_info = auth_services.validate_token(encoded_jwt["token"])
         user_services.update_user_data(
             session, {**update_valid_data, "id": user_info["id"]}

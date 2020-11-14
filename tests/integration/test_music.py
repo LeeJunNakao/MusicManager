@@ -2,18 +2,23 @@ import pytest
 from faker import Faker
 from pydantic import ValidationError
 
-from services import music_services
+from services import music_services, music_tag_services
 from adapters.database_config import get_session
 
 
 @pytest.fixture(name="create_valid_data")
 def create_valid_data_fixture():
-    return {"name": "Take a look around", "artist": "Limp Bizkit", "info": "Nice album"}
+    return {
+        "name": "Take a look around",
+        "artist": "Limp Bizkit",
+        "album": "Chocolate Starfish",
+        "info": "Nice album",
+    }
 
 
 @pytest.fixture(name="create_invalid_data")
 def create_invalid_data_fixture():
-    return {"name": "", "artist": None}
+    return {"name": "", "artist": None, "album": ""}
 
 
 @pytest.fixture(name="create_valid_data_list")
@@ -32,6 +37,16 @@ def create_valid_data_list_fixture():
         musics.append(music)
 
     return musics
+
+
+@pytest.fixture(name="create_valid_data_music_tag")
+def create_valid_data_music_tag_fixture():
+    return {"name": "Favorite"}
+
+
+@pytest.fixture(name="create_invalid_data_music_tag")
+def create_invalid_data_music_tag():
+    return {"name": ""}
 
 
 class TestServices:
@@ -102,3 +117,32 @@ class TestServices:
             assert music_arg["name"] == music_added["name"]
             assert music_arg["artist"] == music_added["artist"]
             assert music_arg["info"] == music_added["info"]
+
+
+class TestMusicTagIntegration:
+    def test_create_music_with_valid_tag(
+        self, create_valid_data, create_valid_data_music_tag, user_info
+    ):
+        session = get_session()
+
+        tag = music_tag_services.create_music_tag(
+            session, {**create_valid_data_music_tag, "user_id": user_info["id"]}
+        )
+
+        music = music_services.insert_music(
+            session, {**create_valid_data, "user_id": user_info["id"], "tag_id": tag.id}
+        )
+
+        assert music["name"] == create_valid_data["name"]
+        assert music["artist"] == create_valid_data["artist"]
+        assert music["info"] == create_valid_data["info"]
+        assert music["album"] == create_valid_data["album"]
+        assert music["tag_id"] == tag.id
+
+    def test_create_music_with_invalid_tag(self, create_valid_data, user_info):
+        session = get_session()
+
+        with pytest.raises(Exception):
+            music_services.insert_music(
+                session, {**create_valid_data, "user_id": user_info["id"], "tag_id": 1}
+            )

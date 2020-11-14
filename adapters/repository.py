@@ -1,6 +1,7 @@
 import abc
 from adapters.orm.music import Music
 from adapters.orm.user import User
+from adapters.orm.music import MusicTag
 
 
 class AbstractRepository(abc.ABC):
@@ -28,7 +29,7 @@ class AbstractRepository(abc.ABC):
 
 class Repository(AbstractRepository):
     @classmethod
-    def create(cls, session, **data):
+    def create(cls, session, data):
         instance = cls.model(**data)
         session.add(instance)
         return instance
@@ -38,7 +39,7 @@ class Repository(AbstractRepository):
         return session.query(cls.model).filter_by(**data).all()
 
     @classmethod
-    def get_one(cls, session, **data):
+    def get_one(cls, session, data):
         return session.query(cls.model).filter_by(**data).one()
 
     @classmethod
@@ -54,7 +55,11 @@ class UserRepository(Repository):
     model = User
 
     @classmethod
-    def update_by_id(cls, session, **data):
-        instance = cls.get_one(session, id=data["id"])
+    def update_by_id(cls, session, data):
+        instance = cls.get_one(session, dict(id=data["id"]))
         for key in data.keys():
             setattr(instance, key, data[key])
+
+
+class MusicTagRepository(Repository):
+    model = MusicTag
