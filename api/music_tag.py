@@ -27,7 +27,7 @@ def create_route():
             music_tag = create_music_tag(session, music_tag)
         else:
             music_tag = get_music_tag(session, request.user_info["id"])
-            
+
             return jsonify([tag.dict() for tag in music_tag]), 200
         return music_tag.dict(), 201
 
@@ -57,7 +57,13 @@ def music_tag_route(id_):
             response = music_tag.dict()
 
         else:
-            response = delete_music_tag(session, music_tag)
+            response = delete_music_tag(
+                session,
+                {
+                    "id": id_,
+                    "user_id": request.user_info["id"],
+                },
+            )
         return response, 200
     except Exception:
         if request.method == "PUT":

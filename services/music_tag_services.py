@@ -58,6 +58,7 @@ def update_music_tag(session, music_tag):
 def delete_music_tag(session, data):
     try:
         MusicTagRepository.delete_one(session, data)
+        session.commit()
         return {"id": data["id"]}
     except Exception:
         session.rollback()
