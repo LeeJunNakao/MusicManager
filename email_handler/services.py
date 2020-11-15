@@ -1,4 +1,3 @@
-import os
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -6,9 +5,10 @@ from email import EmailDto
 
 from config import get_settings
 
+
 def send_email(email: EmailDto):
     settings = get_settings()
-    
+
     host = settings["SMTP_HOST"]
     port = settings["SMTP_PORT"]
     user = settings["SMTP_USER"]
@@ -29,4 +29,3 @@ def send_email(email: EmailDto):
 
     server.sendmail(email_msg["From"], email_msg["To"], email_msg.as_string())
     server.quit()
-

@@ -1,6 +1,6 @@
 from dataclasses import dataclass
 from pydantic import BaseModel, constr
-from typing import Optional, List
+from typing import Optional
 
 
 @dataclass
@@ -46,3 +46,8 @@ class GetMusicTagDto(BaseModel):
     id: int
     user_id: int
     name: str
+
+class UpdateMusicTagDto(BaseModel):
+    id: int
+    user_id: int
+    name: constr(min_length=1, max_length=30)

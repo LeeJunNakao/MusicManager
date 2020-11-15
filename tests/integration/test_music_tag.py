@@ -1,5 +1,4 @@
 import pytest
-from faker import Faker
 from pydantic import ValidationError
 
 from adapters.database_config import get_session

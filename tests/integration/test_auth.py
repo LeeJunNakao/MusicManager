@@ -1,7 +1,6 @@
 import pytest
 from pydantic import ValidationError
 from adapters.repository import UserRepository
-from adapters.orm.user import User
 from services import auth_services
 from adapters.database_config import get_session
 

@@ -2,7 +2,6 @@ from flask import (
     Blueprint,
     request,
 )
-import json
 from adapters.database_config import get_session
 from services import auth_services
 

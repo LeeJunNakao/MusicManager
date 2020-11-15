@@ -11,7 +11,8 @@ class MusicTag(database.Model):
     user_id = Column(Integer, ForeignKey(User.id, ondelete="CASCADE"), nullable=False)
     name = Column(String)
     musics = relationship("Music", back_populates="tag")
-    
+
+
 class Music(database.Model):
     __tablename__ = "music"
     id = Column(Integer, primary_key=True, autoincrement=True)

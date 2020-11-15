@@ -35,7 +35,7 @@ class Repository(AbstractRepository):
         return instance
 
     @classmethod
-    def get(cls, session, **data):
+    def get(cls, session, data):
         return session.query(cls.model).filter_by(**data).all()
 
     @classmethod
@@ -45,6 +45,11 @@ class Repository(AbstractRepository):
     @classmethod
     def list(cls, session):
         return session.query(cls.model).all()
+
+    @classmethod
+    def delete_one(cls, session, data):
+        instance = cls.get_one(session, data)
+        session.delete(instance)
 
 
 class MusicRepository(Repository):
@@ -63,3 +68,10 @@ class UserRepository(Repository):
 
 class MusicTagRepository(Repository):
     model = MusicTag
+
+    @classmethod
+    def update_by_id(cls, session, data):
+        instance = cls.get_one(session, dict(id=data["id"], user_id=data["user_id"]))
+        for key in data.keys():
+            setattr(instance, key, data[key])
+        return instance

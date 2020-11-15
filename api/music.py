@@ -23,6 +23,7 @@ def music_route():
 
 
 @bp.route("", methods=["GET"])
+@login_required
 def user_musics():
     try:
         musics = music_services.list_user_musics(request.json["user_id"])

@@ -1,6 +1,5 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import MetaData
-from config import get_settings
 
 metadata = MetaData(
     naming_convention={

@@ -1,8 +1,8 @@
 import hashlib
-import os
 from config import get_settings
 
 settings = get_settings()
+
 
 def hash_handler(password):
 
