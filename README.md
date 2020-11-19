@@ -7,8 +7,8 @@ Configure the environmnet variables like ".envExample" file.
 ## INICIALIZATION
 
 * Run docker with: `docker-compose run --service-ports app` or `sh run app`
-* Inside docker run: `flask run`
+  * Inside docker run: `flask run`
 
 
 * For tests run: `sh run tests`
-* Inside docker run: `pytest`
+  * Inside docker run: `pytest`
