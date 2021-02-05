@@ -18,18 +18,18 @@ class AbstractRepository(abc.ABC):
 
     @classmethod
     @abc.abstractmethod
-    def create(self, dto):
+    def create(self):
         pass
 
     @classmethod
     @abc.abstractmethod
-    def get(self, dto):
+    def get(self):
         pass
 
 
 class Repository(AbstractRepository):
     @classmethod
-    def create(cls, session, data):
+    def create(cls, session, data: dict):
         instance = cls.model(**data)
         session.add(instance)
         return instance
@@ -39,8 +39,9 @@ class Repository(AbstractRepository):
         return session.query(cls.model).filter_by(**data).all()
 
     @classmethod
-    def get_one(cls, session, data):
-        return session.query(cls.model).filter_by(**data).one()
+    def get_one(cls, session, data: dict):
+        result = session.query(cls.model).filter_by(**data).one()
+        return result
 
     @classmethod
     def list(cls, session):
@@ -70,7 +71,7 @@ class MusicTagRepository(Repository):
     model = MusicTag
 
     @classmethod
-    def update_by_id(cls, session, data):
+    def update_by_id(cls, session, data: dict):
         instance = cls.get_one(session, dict(id=data["id"], user_id=data["user_id"]))
         for key in data.keys():
             setattr(instance, key, data[key])

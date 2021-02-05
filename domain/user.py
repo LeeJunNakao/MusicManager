@@ -4,9 +4,11 @@ from pydantic import BaseModel, constr
 from domain.music import Music
 
 
-@dataclass
-class User:
-    id: int
+class User(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: Optional[int]
     name: str
     email: str
     password: str
@@ -24,8 +26,12 @@ class CreateUserDto(BaseModel):
 
 
 class LoginUserDto(BaseModel):
-    email: str
-    password: str
+    email: constr(max_length=100, regex=r"[\w.]+@\w+\.[a-zA-Z0-9]+$")
+    password: constr(
+        max_length=12,
+        min_length=6,
+        regex=r"^(?=.*[0-9])(?=.*[a-z])(?=.*[@$#&_])(?=.*[A-Z])([\w@$#&_]+)$",
+    )
 
 
 class UpdateUserDto(BaseModel):

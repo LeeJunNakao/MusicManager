@@ -45,7 +45,10 @@ class TestMusic:
                 json={**valid_data, "name": invalid_data["name"]},
             )
 
-        assert response.data.decode("utf-8") == "Não foi possível cadastrar a musica"
+        assert (
+            response.data.decode("utf-8")
+            == "O(s) campo(s) name foram informados incorretamente"
+        )
         assert response.status_code == 400
 
     def test_create_music_with_invalid_artist(
@@ -58,7 +61,10 @@ class TestMusic:
                 json={**valid_data, "artist": invalid_data["artist"]},
             )
 
-        assert response.data.decode("utf-8") == "Não foi possível cadastrar a musica"
+        assert (
+            response.data.decode("utf-8")
+            == "O(s) campo(s) artist foram informados incorretamente"
+        )
         assert response.status_code == 400
 
     def test_create_music_without_token(self, app, valid_data):
@@ -85,8 +91,7 @@ class TestMusic:
     def test_get_music_without_token(self, app, headers, music_list):
         with app.test_client() as client:
             response_list = [
-                client.post(self.endpoint, json=music)
-                for music in music_list
+                client.post(self.endpoint, json=music) for music in music_list
             ]
 
         for response in response_list:

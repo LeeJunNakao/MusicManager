@@ -1,6 +1,17 @@
 import pytest
 from pydantic import ValidationError
-from domain.music import InsertMusicDto, GetMusicDto, InsertMusicTagDto, GetMusicTagDto
+from unittest.mock import MagicMock, Mock
+
+from domain.music import (
+    InsertMusicDto,
+    GetMusicDto,
+    InsertMusicTagDto,
+    GetMusicTagDto,
+    Music,
+)
+from domain.user import User
+from domain.music import MusicTag
+from services import music_services, music_tag_services
 
 
 @pytest.fixture(name="create_valid_data")
@@ -182,3 +193,93 @@ class TestMusicDto:
         get_music_tag_valid_data.pop("id")
         with pytest.raises(ValidationError):
             assert GetMusicTagDto(**get_music_tag_valid_data)
+
+
+class TestMusicServices:
+    def test_insert_music(self, create_valid_data):
+        session = Mock()
+        session.commit = MagicMock()
+
+        music = Music(**create_valid_data)
+
+        repo = Mock()
+        repo.create = MagicMock(return_value=music)
+        (session, create_valid_data, repo)
+
+        result = music_services.insert_music(session, create_valid_data, repo)
+
+        assert music.name == result.name
+
+    def test_list_user_musics(self, create_valid_data):
+        session = Mock()
+        music = Music(**create_valid_data)
+        user = User(
+            id=1, name="Joao", email="joao@email.com", password="123456", musics=[music]
+        )
+
+        repo = Mock()
+
+        repo.get_one = MagicMock(return_value=user)
+
+        result = music_services.list_user_musics(session, user.id, repo)
+
+        assert len(result) == 1
+        result[0].name = music.name
+        result[0].user_id = music.user_id
+        result[0].artist = music.artist
+
+
+class TestMusicTagServices:
+    def test_create_music_tag_services(self, create_music_tag_valid_data):
+        repo = Mock()
+        session = Mock()
+        session.commit = MagicMock()
+
+        music_tag = MusicTag(**create_music_tag_valid_data, id=1)
+        repo.create = MagicMock(return_value=music_tag)
+        result = music_tag_services.create_music_tag(
+            session, create_music_tag_valid_data, repo
+        )
+
+        assert result.id == 1
+
+    def test_get_music_tag_services(self, get_music_tag_valid_data):
+        repo = Mock()
+        session = Mock()
+        session.commit = MagicMock()
+
+        music_tag = MusicTag(**get_music_tag_valid_data)
+        repo.get = MagicMock(return_value=[music_tag])
+        result = music_tag_services.get_music_tag(session, music_tag.user_id, repo)
+
+        assert len(result) == 1
+        assert result[0].id == music_tag.id
+        assert result[0].name == music_tag.name
+        assert result[0].user_id == music_tag.user_id
+
+    def test_update_music_tag(self, get_music_tag_valid_data):
+        repo = Mock()
+        session = Mock()
+        session.commit = MagicMock()
+
+        music_tag = MusicTag(**get_music_tag_valid_data)
+        repo.update_by_id = MagicMock(return_value=music_tag)
+        result = music_tag_services.update_music_tag(
+            session, get_music_tag_valid_data, repo
+        )
+
+        assert result.id == music_tag.id
+        assert result.name == music_tag.name
+        assert result.user_id == music_tag.user_id
+
+    def test_delete_music_tag(self, get_music_tag_valid_data):
+        repo = Mock()
+        repo.delete_one = MagicMock()
+        session = Mock()
+        session.commit = Mock()
+
+        result = music_tag_services.delete_music_tag(
+            session, get_music_tag_valid_data, repo
+        )
+
+        assert result["id"] == get_music_tag_valid_data["id"]

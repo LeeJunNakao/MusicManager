@@ -22,7 +22,6 @@ class Settings(BaseSettings):
 def get_settings():
     settings = Settings()
     settings.SQLALCHEMY_DATABASE_URI = f"{settings.DATABASE}://{settings.DATABASE_USERNAME}:{settings.DATABASE_PASSWORD}@{settings.DATABASE_HOST}:{settings.DATABASE_PORT}/{settings.DATABASE_NAME}"
-
     return settings
 
 

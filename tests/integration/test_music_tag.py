@@ -3,6 +3,7 @@ from pydantic import ValidationError
 
 from adapters.database_config import get_session
 from services.music_tag_services import create_music_tag
+from adapters.repository import MusicTagRepository
 
 
 @pytest.fixture(name="valid_data")
@@ -20,7 +21,7 @@ class TestMusicTag:
         session = get_session()
 
         music_tag = create_music_tag(
-            session, {**valid_data, "user_id": user_info["id"]}
+            session, {**valid_data, "user_id": user_info["id"]}, MusicTagRepository
         )
 
         assert music_tag.name == valid_data["name"]
@@ -30,7 +31,7 @@ class TestMusicTag:
         session = get_session()
 
         with pytest.raises(ValidationError):
-            create_music_tag(session, {**invalid_data, "user_id": user_info["id"]})
+            create_music_tag(session, {**invalid_data, "user_id": user_info["id"]}, MusicTagRepository)
 
     def test_insert_with_invalid_user(self, valid_data):
         session = get_session()

@@ -1,30 +1,27 @@
-from domain.music import InsertMusicTagDto, GetMusicTagDto, UpdateMusicTagDto
+from domain.music import GetMusicTagDto, UpdateMusicTagDto, MusicTag, InsertMusicTagDto
 from adapters.repository import MusicTagRepository
 
 
-def create_music_tag(session, music_tag):
-
-    dto = InsertMusicTagDto(**music_tag)
-
+def create_music_tag(session, data, repo: MusicTagRepository) -> MusicTag:
+    InsertMusicTagDto(**data)
     try:
-        music_tag = MusicTagRepository.create(session, dto.dict())
+        result = repo.create(session, data)
         session.commit()
-        return GetMusicTagDto(
-            id=music_tag.id, user_id=music_tag.user_id, name=music_tag.name
-        )
-    except Exception:
+        music_tag = MusicTag.from_orm(result)
+        return music_tag
+    except Exception as erro:
         session.rollback()
         raise Exception
     finally:
         session.close()
 
 
-def get_music_tag(session, user_id: int):
+def get_music_tag(session, user_id: int, repo: MusicTagRepository):
 
     try:
-        music_tags = MusicTagRepository.get(session, dict(user_id=user_id))
+        music_tags = repo.get(session, dict(user_id=user_id))
         session.commit()
-    
+
         return [
             GetMusicTagDto(id=tag.id, user_id=tag.user_id, name=tag.name)
             for tag in music_tags
@@ -36,18 +33,15 @@ def get_music_tag(session, user_id: int):
         session.close()
 
 
-def update_music_tag(session, music_tag):
+def update_music_tag(session, music_tag, repo: MusicTagRepository):
 
     dto = UpdateMusicTagDto(**music_tag)
 
     try:
-        music_tag = MusicTagRepository.update_by_id(session, dto.dict())
+        result = repo.update_by_id(session, dto.dict())
+        music_tag = MusicTag.from_orm(result)
         session.commit()
-        return GetMusicTagDto(
-            id=music_tag.id,
-            user_id=music_tag.user_id,
-            name=music_tag.name,
-        )
+        return music_tag
     except Exception:
         session.rollback()
         raise Exception
@@ -55,9 +49,9 @@ def update_music_tag(session, music_tag):
         session.close()
 
 
-def delete_music_tag(session, data):
+def delete_music_tag(session, data, repo):
     try:
-        MusicTagRepository.delete_one(session, data)
+        repo.delete_one(session, data)
         session.commit()
         return {"id": data["id"]}
     except Exception:

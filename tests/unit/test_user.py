@@ -1,7 +1,9 @@
 import pytest
 from pydantic import ValidationError
+from unittest.mock import MagicMock, Mock
 
 from domain.user import CreateUserDto
+from services import auth_services
 
 
 @pytest.fixture(name="valid_data")
@@ -21,6 +23,16 @@ def invalid_data_fixture():
     }
 
 
+@pytest.fixture(name="user")
+def user_fixture(valid_data):
+    user = Mock()
+    user.password = auth_services.hash_handler(valid_data["password"])
+    user.email = valid_data["email"]
+    user.id = 1
+
+    return user
+
+
 class TestLoginDto:
     def test_create_user_with_valid_data(self, valid_data):
         assert CreateUserDto(**valid_data)
@@ -32,3 +44,28 @@ class TestLoginDto:
     def test_create_user_with_invalid_password(self, valid_data, invalid_data):
         with pytest.raises(ValidationError):
             assert CreateUserDto(**{**valid_data, "password": invalid_data["password"]})
+
+    def test_service_create_user(self, valid_data, user):
+        session = Mock()
+        session.commit = MagicMock()
+
+        repo = Mock()
+        repo.create = MagicMock()
+        repo.get_one = MagicMock(return_value=user)
+
+        encoded_jwt = auth_services.create_user(session, valid_data, repo)
+
+        assert "token" in encoded_jwt.keys()
+
+    def test_service_validate_token(self, valid_data, user):
+        session = Mock()
+        session.commit = MagicMock()
+
+        repo = Mock()
+        repo.get_one = MagicMock(return_value=user)
+
+        encoded_jwt = auth_services.login(session, valid_data, repo)
+
+        decoded_token = auth_services.validate_token(encoded_jwt["token"])
+
+        assert decoded_token["id"] == user.id

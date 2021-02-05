@@ -1,4 +1,6 @@
 import pytest
+from services.utils.exceptions import PersistenceError, LoginError
+from api.utils import exceptions
 
 
 @pytest.fixture(name="valid_data")
@@ -90,7 +92,7 @@ class TestLogin:
                 json={**valid_data, "email": "mercio@hotmail.com"},
             )
 
-        assert response.data.decode("utf-8") == "Acesso negado!"
+        assert response.data.decode("utf-8") == LoginError().message
         assert response.status_code == 400
 
     def test_login_with_wrong_password(self, app, valid_data, invalid_data):
@@ -103,5 +105,31 @@ class TestLogin:
                 json={**valid_data, "password": "Marc12@15"},
             )
 
-        assert response.data.decode("utf-8") == "Acesso negado!"
+        assert response.data.decode("utf-8") == LoginError().message
+        assert response.status_code == 400
+
+    def test_login_with_invalid_email(self, app, valid_data, invalid_data):
+        with app.test_client() as client:
+            client.post("/auth/register", json=valid_data)
+
+        with app.test_client() as client:
+            response = client.post(
+                self.endpoint,
+                json={**valid_data, "email": invalid_data["email"]},
+            )
+
+        assert response.data.decode("utf-8") == exceptions.auth_validation_error
+        assert response.status_code == 400
+
+    def test_login_with_invalid_email(self, app, valid_data, invalid_data):
+        with app.test_client() as client:
+            client.post("/auth/register", json=valid_data)
+
+        with app.test_client() as client:
+            response = client.post(
+                self.endpoint,
+                json={**valid_data, "password": invalid_data["password"]},
+            )
+
+        assert response.data.decode("utf-8") == exceptions.auth_validation_error
         assert response.status_code == 400

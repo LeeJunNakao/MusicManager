@@ -12,6 +12,8 @@ from services.music_tag_services import (
     delete_music_tag,
 )
 from api.utils.decorators import login_required
+from adapters.repository import MusicTagRepository
+
 
 bp = Blueprint("music_tag", __name__, url_prefix="/music_tag")
 
@@ -24,9 +26,11 @@ def create_route():
     try:
         if request.method == "POST":
             music_tag = {**request.json, "user_id": request.user_info["id"]}
-            music_tag = create_music_tag(session, music_tag)
+            music_tag = create_music_tag(session, music_tag, MusicTagRepository)
         else:
-            music_tag = get_music_tag(session, request.user_info["id"])
+            music_tag = get_music_tag(
+                session, request.user_info["id"], MusicTagRepository
+            )
 
             return jsonify([tag.dict() for tag in music_tag]), 200
         return music_tag.dict(), 201
@@ -52,6 +56,7 @@ def music_tag_route(id_):
                     "id": id_,
                     "user_id": request.user_info["id"],
                 },
+                MusicTagRepository,
             )
 
             response = music_tag.dict()
@@ -63,6 +68,7 @@ def music_tag_route(id_):
                     "id": id_,
                     "user_id": request.user_info["id"],
                 },
+                MusicTagRepository,
             )
         return response, 200
     except Exception:

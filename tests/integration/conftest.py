@@ -5,6 +5,7 @@ from contextlib import contextmanager
 from api import create_app
 from adapters.database_config import init_database, database, get_session
 from services import auth_services
+from adapters.repository import UserRepository
 
 
 @pytest.fixture(autouse=True)
@@ -49,7 +50,7 @@ def get_valid_user_fixture():
         "password": "Abc123@",
     }
     session = get_session()
-    jwt = auth_services.create_user(session, user_data)
+    jwt = auth_services.create_user(session, user_data, UserRepository)
     user_info = auth_services.validate_token(jwt["token"])
     user_info["token"] = jwt["token"]
 

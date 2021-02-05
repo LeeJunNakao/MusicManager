@@ -3,13 +3,17 @@ from pydantic import BaseModel, constr
 from typing import Optional
 
 
-@dataclass
-class Music:
-    id: int
+class Music(BaseModel):
+    class Config:
+        orm_mode = True
+
+    id: Optional[int]
     user_id: int
     name: str
-    artist: str
-    info: str
+    artist: Optional[str]
+    info: Optional[str]
+    album: Optional[str]
+    tag_id: Optional[int]
 
 
 class InsertMusicDto(BaseModel):
@@ -30,9 +34,11 @@ class GetMusicDto(BaseModel):
     tag_id: Optional[int]
 
 
-@dataclass
 class MusicTag(BaseModel):
-    id: int
+    class Config:
+        orm_mode = True
+
+    id: Optional[int]
     user_id: int
     name: str
 
@@ -46,6 +52,7 @@ class GetMusicTagDto(BaseModel):
     id: int
     user_id: int
     name: str
+
 
 class UpdateMusicTagDto(BaseModel):
     id: int

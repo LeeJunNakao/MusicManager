@@ -1,33 +1,29 @@
-from domain.music import InsertMusicDto, GetMusicDto
-from adapters.repository import MusicRepository, UserRepository
+from domain.music import InsertMusicDto, Music
+from domain.user import User
+from typing import List
+from protocols.repository import MusicRepository
+from services.utils.exceptions import PersistenceError
 
-
-def insert_music(session, music: dict):
+def insert_music(session, music: dict, music_repo: MusicRepository) -> Music:
 
     dto = InsertMusicDto(**music)
+    data = dto.dict()
 
     try:
-        music = MusicRepository.create(session, dto.dict())
+        result = music_repo.create(session, data)
         session.commit()
-        return GetMusicDto(
-            id=music.id,
-            name=music.name,
-            artist=music.artist,
-            info=music.info,
-            album=music.album,
-            tag_id=music.tag_id,
-        ).dict()
+        music_dto = Music.from_orm(result)
+        return music_dto
     except Exception:
         session.rollback()
-        raise Exception
+        raise PersistenceError
     finally:
         session.close()
 
 
-def list_user_musics(session, user_id: int):
+def list_user_musics(session, user_id: int, user_repo) -> List[Music]:
 
-    user = UserRepository.get_one(session, dict(id=user_id))
-    user_musics = user.musics
-    musics = [GetMusicDto(**vars(music)).dict() for music in user_musics]
+    user = user_repo.get_one(session, dict(id=user_id))
+    user_dto = User.from_orm(user)
 
-    return musics
+    return user_dto.musics

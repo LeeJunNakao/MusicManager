@@ -14,5 +14,5 @@ def create_app():
     app.register_blueprint(auth.bp)
     app.register_blueprint(music.bp)
     app.register_blueprint(music_tag.bp)
-    
+
     return app
