@@ -12,6 +12,6 @@ def login_required(f):
             request.user_info = decoded_token
             return f(*args, **kwargs)
         except:
-            return "Favor fazer o login", 400
+            return "Favor fazer o login", 401
 
     return verify_token

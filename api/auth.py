@@ -33,3 +33,14 @@ def login_route():
         return exceptions.auth_validation_error, 400
     except Exception as error:
         return error.message, 400
+
+
+@bp.route("/validate-token", methods=["POST"])
+def validate_token():
+    try:
+        token = request.json["token"]
+        decoded_token = auth_services.validate_token(token)
+        response = {"token_validation": True, "user_id": decoded_token["id"]}
+        return response, 200
+    except Exception:
+        return {"token_validation": False}, 401
